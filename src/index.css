@@ -103,12 +103,9 @@
   --s9: 96px;
   --s10: 128px;
 
-  /* Chrome heights, shared so layout gutters cannot drift from the bars they
-     are clearing. --nav-h is the nav row only: the header adds the top safe
-     area on top of it. --sticky-cta-h is the measured mobile bar (63px),
-     rounded up; it only drives the page's bottom gutter, so slack is free. */
+  /* The nav row's height, shared so the scroll offset cannot drift from the
+     bar it is clearing. Row only: the header adds the top safe area on top. */
   --nav-h: 68px;
-  --sticky-cta-h: 64px;
 }
 
 @layer base {
@@ -120,19 +117,17 @@
 
   html {
     scroll-behavior: smooth;
-    /* The header is sticky, so it still covers the top of whatever an anchor
-       lands on. Derived from the bar itself, plus the notch inset. */
-    scroll-padding-top: calc(
-      var(--nav-h) + env(safe-area-inset-top, 0px) + var(--s5)
-    );
+    /* Phones pin nothing, so an anchor only needs a little breathing room. */
+    scroll-padding-top: var(--s5);
     -webkit-text-size-adjust: 100%;
   }
 
-  /* Same deal at the bottom, for the fixed download bar on phones. */
-  @media (max-width: 767px) {
+  /* From md the header pins, so it would otherwise cover the top of whatever
+     an anchor lands on. Derived from the bar itself, plus the notch inset. */
+  @media (min-width: 768px) {
     html {
-      scroll-padding-bottom: calc(
-        var(--sticky-cta-h) + env(safe-area-inset-bottom, 0px) + var(--s4)
+      scroll-padding-top: calc(
+        var(--nav-h) + env(safe-area-inset-top, 0px) + var(--s5)
       );
     }
   }
@@ -470,32 +465,6 @@
     background: var(--color-bg);
   }
 
-  /* Sticky mobile download bar. Appears once the hero is behind you. */
-  .sticky-cta {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 45;
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
-    background: rgba(11, 11, 12, 0.82);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-top: 1px solid var(--color-hairline);
-    transform: translate3d(0, 110%, 0);
-    transition: transform 420ms var(--ease-settle);
-  }
-
-  .sticky-cta[data-shown="true"] {
-    transform: translate3d(0, 0, 0);
-  }
-
-  @media (min-width: 768px) {
-    .sticky-cta {
-      display: none;
-    }
-  }
-
   /* Press feedback on pointer-down, not on release. apple-design §1. */
   .btn-amber:active,
   .btn-ghost:active {
@@ -691,8 +660,7 @@
 /* Translucent chrome gets frostier, not blurrier, when the user asks for
    less transparency. apple-design §14. */
 @media (prefers-reduced-transparency: reduce) {
-  .nav-glass,
-  .sticky-cta {
+  .nav-glass {
     background: var(--color-bg) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;

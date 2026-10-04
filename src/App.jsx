@@ -2,7 +2,6 @@ import { Suspense, lazy, useEffect } from "react";
 import Navbar from "./sections/Navbar";
 import Hero from "./sections/Hero";
 import CallOut from "./sections/CallOut";
-import StickyCTA from "./sections/StickyCTA";
 
 /* Navbar, Hero and CallOut ship in the main bundle: they are the first
    screenful and the section right under it. Everything below the fold is
@@ -64,10 +63,7 @@ export default function App() {
   usePrefetchSections();
 
   return (
-    /* The bottom gutter is the fixed download bar's clearance. Without it the
-       last band of the footer sits permanently under the bar with no way to
-       scroll it out. Phones only: the bar is hidden from md up. */
-    <div className="grain relative min-h-screen bg-bg pb-[calc(var(--sticky-cta-h)+env(safe-area-inset-bottom,0px))] md:pb-0">
+    <div className="grain relative min-h-screen bg-bg">
       <a href="#main" className="skip-link">
         Skip to content
       </a>
@@ -118,8 +114,6 @@ export default function App() {
       <Suspense fallback={<Placeholder h={400} />}>
         <Footer />
       </Suspense>
-
-      <StickyCTA />
     </div>
   );
 }

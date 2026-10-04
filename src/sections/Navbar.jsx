@@ -34,16 +34,18 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    /* Sticky, not fixed. Fixed took the header out of flow, so the page began
-       underneath it and every section slid behind an opaque bar that belonged
-       to nothing. Sticky keeps it in flow: the document genuinely starts below
-       the header, and it only pins itself once you scroll past it.
+    /* Phones get a plain header that scrolls away with the page: nothing is
+       pinned, so nothing is ever covered, and the footer's back-to-top link is
+       the way back up. From md the viewport is tall enough to spare the 68px
+       and it pins, which is where a persistent nav actually earns its keep.
+
+       Sticky rather than fixed, so even when pinned it occupies real layout
+       space and the document starts below it instead of underneath it.
 
        The top safe-area inset is padding on the header rather than a margin on
-       the nav, so the notch strip is filled by the header's own background
-       once it is pinned. */
+       the nav, so the notch strip is filled by the header's own background. */
     <header
-      className={`sticky top-0 z-50 transition-colors duration-300 ${scrolled ? "nav-glass" : ""}`}
+      className={`relative z-50 transition-colors duration-300 md:sticky md:top-0 ${scrolled ? "nav-glass" : ""}`}
       style={{
         paddingTop: "env(safe-area-inset-top, 0px)",
         borderBottom: `1px solid ${scrolled ? "var(--color-hairline)" : "transparent"}`,
