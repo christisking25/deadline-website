@@ -465,10 +465,78 @@
     background: var(--color-bg);
   }
 
+  /* ---------------------------------------------------------------
+     Floating back-to-top.
+
+     z-index 40 is deliberate: above every section (they are all z-auto)
+     but below the header and its mobile sheet at 50, so an open menu is
+     never competed with, and below the skip link at 200.
+
+     Hidden state carries visibility and pointer-events, not opacity
+     alone: a 0-opacity button still swallows taps in the corner.
+     Visibility is delayed by the length of the fade on the way out and
+     switched instantly on the way in, so the fade is never clipped.
+
+     The fade itself needs no reduced-motion branch; the global block at
+     the bottom of this file flattens every transition. The scroll
+     behaviour is handled explicitly in BackToTop.jsx.
+     --------------------------------------------------------------- */
+  .to-top {
+    position: fixed;
+    right: 16px;
+    /* 16px as specced, plus the home indicator on iOS so the button is
+       not sitting underneath it. The inset is 0 everywhere else. */
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border: none;
+    border-radius: 999px;
+    background: var(--color-amber);
+    color: var(--color-bg);
+    box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate3d(0, 8px, 0) scale(0.92);
+    transition:
+      opacity 260ms var(--ease-settle),
+      transform 260ms var(--ease-settle),
+      box-shadow 200ms var(--ease-out-expo),
+      filter 200ms var(--ease-out-expo),
+      visibility 0s linear 260ms;
+  }
+
+  .to-top[data-shown="true"] {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition-delay: 0s;
+  }
+
+  /* Must stay after the [data-shown] rule: same specificity, so source
+     order is what lets the hover transform win. */
+  .to-top:hover {
+    filter: brightness(1.08);
+    transform: translate3d(0, -2px, 0) scale(1);
+    box-shadow:
+      0 10px 30px -8px rgba(0, 0, 0, 0.6),
+      0 0 32px rgba(251, 174, 60, 0.45);
+  }
+
   /* Press feedback on pointer-down, not on release. apple-design §1. */
   .btn-amber:active,
   .btn-ghost:active {
     transform: translateY(0) scale(0.975);
+    transition-duration: 90ms;
+  }
+
+  .to-top:active {
+    transform: translate3d(0, 0, 0) scale(0.94);
     transition-duration: 90ms;
   }
 }

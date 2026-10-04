@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect } from "react";
 import Navbar from "./sections/Navbar";
 import Hero from "./sections/Hero";
 import CallOut from "./sections/CallOut";
+import BackToTop from "./components/BackToTop";
 
 /* Navbar, Hero and CallOut ship in the main bundle: they are the first
    screenful and the section right under it. Everything below the fold is
@@ -114,6 +115,8 @@ export default function App() {
       <Suspense fallback={<Placeholder h={400} />}>
         <Footer />
       </Suspense>
+
+      <BackToTop />
     </div>
   );
 }
