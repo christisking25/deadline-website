@@ -34,14 +34,23 @@ export default function Navbar() {
   }, [open]);
 
   return (
+    /* Sticky, not fixed. Fixed took the header out of flow, so the page began
+       underneath it and every section slid behind an opaque bar that belonged
+       to nothing. Sticky keeps it in flow: the document genuinely starts below
+       the header, and it only pins itself once you scroll past it.
+
+       The top safe-area inset is padding on the header rather than a margin on
+       the nav, so the notch strip is filled by the header's own background
+       once it is pinned. */
     <header
-      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${scrolled ? "nav-glass" : ""}`}
+      className={`sticky top-0 z-50 transition-colors duration-300 ${scrolled ? "nav-glass" : ""}`}
       style={{
+        paddingTop: "env(safe-area-inset-top, 0px)",
         borderBottom: `1px solid ${scrolled ? "var(--color-hairline)" : "transparent"}`,
       }}
     >
       <nav
-        className="container-d flex h-[68px] items-center justify-between"
+        className="container-d flex h-[var(--nav-h)] items-center justify-between"
         aria-label="Primary"
       >
         <a href="#top" className="shrink-0 rounded-md" aria-label="Deadline, home">

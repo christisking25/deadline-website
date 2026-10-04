@@ -17,11 +17,15 @@ export default function StickyCTA() {
 
   useEffect(() => {
     const hero = document.getElementById("top");
-    const footerCta = document.getElementById("download");
 
     const update = () => {
       ticking.current = false;
       const heroBottom = hero ? hero.getBoundingClientRect().bottom : 600;
+      // Looked up per tick, not once on mount: FinalCTA is a lazy chunk, so
+      // #download does not exist yet when this effect first runs. Caching it
+      // here captured null forever, which pinned ctaTop at Infinity and left
+      // the bar sitting on top of the real download button all the way down.
+      const footerCta = document.getElementById("download");
       // Hide again once the real CTA is on screen, so the two never compete.
       const ctaTop = footerCta
         ? footerCta.getBoundingClientRect().top

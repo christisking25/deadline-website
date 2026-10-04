@@ -64,7 +64,10 @@ export default function App() {
   usePrefetchSections();
 
   return (
-    <div className="grain relative min-h-screen bg-bg">
+    /* The bottom gutter is the fixed download bar's clearance. Without it the
+       last band of the footer sits permanently under the bar with no way to
+       scroll it out. Phones only: the bar is hidden from md up. */
+    <div className="grain relative min-h-screen bg-bg pb-[calc(var(--sticky-cta-h)+env(safe-area-inset-bottom,0px))] md:pb-0">
       <a href="#main" className="skip-link">
         Skip to content
       </a>
