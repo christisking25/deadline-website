@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0B0B0C" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>Deadline: Screen time that fights back</title>
+    <meta
+      name="description"
+      content="You said you would study. You said you would hit the gym. Deadline locks your apps until you actually do it. Escalating locks, location triggers, and no excuses. iOS."
+    />
+    <link rel="canonical" href="https://hitdeadline.com/" />
+
+    <!-- Favicons, generated from the real app artwork by scripts/make-icons.py.
+         .ico first for older browsers, then the PNGs modern ones prefer. -->
+    <link rel="icon" href="/assets/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Deadline" />
+    <meta property="og:url" content="https://hitdeadline.com/" />
+    <meta property="og:title" content="Deadline: Screen time that fights back" />
+    <meta
+      property="og:description"
+      content="You said you would study. You said you would hit the gym. Deadline locks your apps until you actually do it."
+    />
+    <meta property="og:image" content="https://hitdeadline.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Deadline. Screen time that fights back." />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Deadline: Screen time that fights back" />
+    <meta
+      name="twitter:description"
+      content="You said you would study. You said you would hit the gym. Deadline locks your apps until you actually do it."
+    />
+    <meta name="twitter:image" content="https://hitdeadline.com/og-image.png" />
+
+    <!-- Type is self-hosted (see src/index.css). Apple devices resolve the
+         ui-rounded generic first and never download Nunito at all; everyone
+         else gets a 43 kB latin subset from this origin, with no
+         render-blocking third-party stylesheet in front of first paint.
+         Only the display weight is preloaded: it is the headline, and so the
+         thing most likely to be the LCP element. -->
+    <link
+      rel="preload"
+      href="/fonts/nunito-800.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Deadline",
+        "applicationCategory": "ProductivityApplication",
+        "operatingSystem": "iOS",
+        "url": "https://hitdeadline.com/",
+        "description": "Screen time that fights back. Deadline locks your apps until you do what you said you would do."
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <noscript>
+      <div
+        style="
+          max-width: 640px;
+          margin: 15vh auto;
+          padding: 0 24px;
+          color: #fff;
+          font-family: system-ui, sans-serif;
+          text-align: center;
+        "
+      >
+        <h1 style="font-size: 40px; letter-spacing: -0.03em; margin: 0 0 16px">
+          Deadline
+        </h1>
+        <p style="color: #8a8a8a; line-height: 1.6; margin: 0 0 24px">
+          Screen time that fights back. Deadline locks your apps until you do
+          what you said you would do. This site needs JavaScript enabled.
+        </p>
+        <p style="color: #8a8a8a; line-height: 1.6; margin: 0">
+          Questions:
+          <a href="mailto:support@hitdeadline.com" style="color: #d4a853"
+            >support@hitdeadline.com</a
+          >
+        </p>
+      </div>
+    </noscript>
+
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

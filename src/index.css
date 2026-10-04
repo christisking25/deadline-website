@@ -1,0 +1,679 @@
+/* source(none) disables Tailwind's automatic content detection, which otherwise
+   walks up to the nearest git root and scans everything above this folder.
+   We list our own sources explicitly instead. */
+@import "tailwindcss" source(none);
+
+@source "../index.html";
+@source "./";
+
+/* ============================================================
+   Self-hosted type.
+
+   These were loading from fonts.googleapis.com, which put a
+   render-blocking third-party stylesheet in front of first paint and
+   sat badly next to a privacy section promising no third-party
+   anything. Latin subsets, 43 kB total, served from our own origin.
+   ============================================================ */
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/nunito-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/fonts/nunito-800.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/inter-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/inter-600.woff2") format("woff2");
+}
+
+/* ============================================================
+   Deadline design tokens.
+
+   These are lifted verbatim from the iOS app's Palette enum in
+   Deadline/UI/Theme.swift, so the site and the product cannot drift.
+   Dark mode only. This is intentional.
+   ============================================================ */
+
+@theme {
+  /* Palette.nearBlack / surface / surfaceRaised / hairline / muted / ink */
+  --color-bg: #0b0b0c;
+  --color-surface: #141416;
+  --color-surface-2: #1c1c1f;
+  --color-hairline: #2a2a2e;
+  --color-muted: #8a8a8e;
+  --color-ink: #f4f4f5;
+
+  /* Palette.amber: the brand tint, matched to the sand in the app icon. */
+  --color-amber: #fbae3c;
+  /* Palette.red: escalation only. Tier 3 and overdue work. Never a general accent. */
+  --color-red: #ff453a;
+  /* Palette.green: submitted / done. */
+  --color-green: #30d158;
+  /* Palette.blue: Gentle tier, gym, far-off deadlines. */
+  --color-blue: #5aa0ff;
+  /* Intermediate rungs of the escalation ramp. */
+  --color-orange: #ff8a3d;
+  --color-deep-orange: #ff6b4a;
+
+  /* SF Pro Rounded on Apple platforms via the ui-rounded generic, Nunito
+     everywhere else. The app is entirely design: .rounded, so the web has to
+     match or the two stop looking like one product. */
+  --font-display:
+    ui-rounded, "SF Pro Rounded", "Nunito", -apple-system, system-ui, sans-serif;
+  --font-body:
+    ui-rounded, "SF Pro Rounded", "Nunito", -apple-system, system-ui, sans-serif;
+  /* The app uses the default (non-rounded) SF for row titles and body text. */
+  --font-text: -apple-system, "Inter", system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  /* Settles like a critically damped spring: fast departure, no overshoot.
+     apple-design's default (damping 1.0, response ~0.4) expressed as a curve,
+     since scroll reveals are not grabbable and need no velocity handoff. */
+  --ease-settle: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* One spacing scale, 4px base. Every gap on the page comes from here. */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+  --s8: 64px;
+  --s9: 96px;
+  --s10: 128px;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  p {
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+    border-radius: 999px;
+  }
+
+  a,
+  button {
+    cursor: pointer;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  ::selection {
+    background: rgba(251, 174, 60, 0.3);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .container-d {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+
+  @media (min-width: 768px) {
+    .container-d {
+      padding-inline: 24px;
+    }
+  }
+
+  .section-pad {
+    padding-block: 64px;
+  }
+
+  @media (min-width: 768px) {
+    .section-pad {
+      padding-block: 80px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-pad {
+      padding-block: 120px;
+    }
+  }
+
+  /* Section label. Matches FocusSectionHeader exactly:
+     11px, bold, rounded, tracking 1.0, Palette.muted. */
+  .label-d {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    line-height: 1;
+    color: var(--color-muted);
+  }
+
+  .numeral {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  /* The app's CardBackground modifier: 16pt continuous radius,
+     Palette.surface fill, 1px stroke of the tint at 0.6 alpha. */
+  .card-d {
+    background: var(--color-surface);
+    border: 1px solid rgba(42, 42, 46, 0.6);
+    border-radius: 16px;
+    transition:
+      border-color 220ms var(--ease-out-expo),
+      transform 220ms var(--ease-out-expo),
+      box-shadow 220ms var(--ease-out-expo);
+  }
+
+  .card-hover:hover {
+    border-color: rgba(251, 174, 60, 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 18px 50px -12px rgba(251, 174, 60, 0.2);
+  }
+
+  /* TagPill from Theme.swift: 10px bold rounded, tracking 0.6,
+     fill at 0.15 alpha, stroke at 0.45, capsule, padding 8/4. */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.6px;
+    line-height: 1;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+  }
+
+  /* Buttons are capsules, like the app's tier pills and tab bar. */
+  .btn-amber {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 52px;
+    padding-inline: 28px;
+    border: none;
+    border-radius: 999px;
+    background: var(--color-amber);
+    color: var(--color-bg);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      filter 200ms var(--ease-out-expo),
+      box-shadow 200ms var(--ease-out-expo),
+      transform 200ms var(--ease-out-expo);
+  }
+
+  .btn-amber:hover {
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+    box-shadow: 0 0 36px rgba(251, 174, 60, 0.42);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 52px;
+    padding-inline: 28px;
+    border: 1px solid var(--color-hairline);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      border-color 200ms var(--ease-out-expo),
+      background-color 200ms var(--ease-out-expo);
+  }
+
+  .btn-ghost:hover {
+    border-color: rgba(251, 174, 60, 0.45);
+    background: rgba(251, 174, 60, 0.06);
+  }
+
+  /* Ambient glow. Decorative only, always aria-hidden. */
+  .glow {
+    position: absolute;
+    border-radius: 9999px;
+    pointer-events: none;
+    filter: blur(90px);
+    background: radial-gradient(
+      circle,
+      rgba(251, 174, 60, 0.16) 0%,
+      rgba(251, 174, 60, 0.04) 42%,
+      transparent 66%
+    );
+  }
+
+  .glow-red {
+    background: radial-gradient(
+      circle,
+      rgba(255, 69, 58, 0.15) 0%,
+      rgba(255, 69, 58, 0.04) 42%,
+      transparent 66%
+    );
+  }
+
+  .glow-blue {
+    background: radial-gradient(
+      circle,
+      rgba(90, 160, 255, 0.13) 0%,
+      rgba(90, 160, 255, 0.035) 42%,
+      transparent 66%
+    );
+  }
+
+  .hairline {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.09),
+      transparent
+    );
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 16px;
+    top: -60px;
+    z-index: 200;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: var(--color-amber);
+    color: var(--color-bg);
+    font-weight: 800;
+    text-decoration: none;
+    transition: top 160ms var(--ease-out-expo);
+  }
+
+  .skip-link:focus {
+    top: 16px;
+  }
+
+  /* ---------------------------------------------------------------
+     Display type. Tracking is size-specific: large text reads too
+     loose at a fixed value, small text too tight. apple-design §15.
+     --------------------------------------------------------------- */
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.6rem, 7vw, 6rem);
+    line-height: 0.94;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
+  }
+
+  .t-h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.9rem, 3.6vw, 3.1rem);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .t-h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.45rem, 2.2vw, 1.9rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .t-lede {
+    font-size: clamp(1.0625rem, 1.3vw, 1.2rem);
+    line-height: 1.6;
+    letter-spacing: 0;
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
+  /* Nav links: real 44px hit area without changing the visual rhythm. */
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: 2px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-muted);
+    text-decoration: none;
+    transition: color 200ms var(--ease-settle);
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    bottom: 10px;
+    height: 1px;
+    background: var(--color-amber);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 280ms var(--ease-settle);
+  }
+
+  .nav-link:hover {
+    color: var(--color-ink);
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .nav-glass {
+    background: rgba(11, 11, 12, 0.72);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  }
+
+  /* Sticky mobile download bar. Appears once the hero is behind you. */
+  .sticky-cta {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 45;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: rgba(11, 11, 12, 0.82);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border-top: 1px solid var(--color-hairline);
+    transform: translate3d(0, 110%, 0);
+    transition: transform 420ms var(--ease-settle);
+  }
+
+  .sticky-cta[data-shown="true"] {
+    transform: translate3d(0, 0, 0);
+  }
+
+  @media (min-width: 768px) {
+    .sticky-cta {
+      display: none;
+    }
+  }
+
+  /* Press feedback on pointer-down, not on release. apple-design §1. */
+  .btn-amber:active,
+  .btn-ghost:active {
+    transform: translateY(0) scale(0.975);
+    transition-duration: 90ms;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* ============================================================
+     Scroll reveals.
+
+     Resting state is VISIBLE. The hidden state only applies once JS has
+     put `js-reveal` on <html>, so no-JS, reduced-motion, and throttled
+     tabs all render readable content instead of an empty page.
+     ============================================================ */
+  .js-reveal .reveal:not(.is-in) {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+
+  .js-reveal .reveal {
+    transition:
+      opacity 640ms var(--ease-settle),
+      transform 640ms var(--ease-settle);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  /* Drop the hint once it has played, so we stop paying for the layer. */
+  .js-reveal .reveal.is-in {
+    will-change: auto;
+  }
+
+  /* Staggered children: delay comes from position, not from JS timers. */
+  .js-reveal .reveal-group:not(.is-in) .reveal-item {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+
+  .js-reveal .reveal-group .reveal-item {
+    transition:
+      opacity 640ms var(--ease-settle),
+      transform 640ms var(--ease-settle);
+  }
+
+  .js-reveal .reveal-group.is-in .reveal-item:nth-child(1) { transition-delay: calc(var(--reveal-step, 70ms) * 0); }
+  .js-reveal .reveal-group.is-in .reveal-item:nth-child(2) { transition-delay: calc(var(--reveal-step, 70ms) * 1); }
+  .js-reveal .reveal-group.is-in .reveal-item:nth-child(3) { transition-delay: calc(var(--reveal-step, 70ms) * 2); }
+  .js-reveal .reveal-group.is-in .reveal-item:nth-child(4) { transition-delay: calc(var(--reveal-step, 70ms) * 3); }
+  .js-reveal .reveal-group.is-in .reveal-item:nth-child(5) { transition-delay: calc(var(--reveal-step, 70ms) * 4); }
+  .js-reveal .reveal-group.is-in .reveal-item:nth-child(n + 6) { transition-delay: calc(var(--reveal-step, 70ms) * 5); }
+
+  /* Film grain over the whole page. Inline SVG so there is no extra request. */
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.04);
+    }
+  }
+
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0);
+    }
+    50% {
+      transform: translate3d(2%, -3%, 0);
+    }
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(-50%, 0, 0);
+    }
+  }
+
+  @keyframes sand-fall {
+    0% {
+      transform: translateY(-8px);
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(42px);
+      opacity: 0;
+    }
+  }
+
+  /* Rows settling into a list, the way the app's sections animate in. */
+  @keyframes row-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 3.2s ease-in-out infinite;
+  }
+
+  .animate-drift {
+    animation: drift 18s ease-in-out infinite;
+  }
+
+  .animate-row-in {
+    animation: row-in 420ms var(--ease-out-expo) both;
+  }
+
+  /* Testimonial marquee. Track is duplicated in JSX, so -50% wraps seamlessly. */
+  .marquee-row {
+    width: max-content;
+    animation: marquee var(--marquee-duration, 55s) linear infinite;
+    animation-direction: var(--marquee-direction, normal);
+    animation-play-state: running;
+    will-change: transform;
+  }
+
+  .marquee-row:hover,
+  .marquee-row:focus-within {
+    animation-play-state: paused;
+  }
+}
+
+/* ============================================================
+   Reduced motion. Kill marquees, parallax, scrub, pulse and
+   counters. Everything renders in its final, readable state.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-pulse-glow,
+  .animate-drift,
+  .animate-row-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Reveals never arm under reduced motion, but belt and braces: anything
+     that did get hidden becomes visible, with no slide. */
+  .js-reveal .reveal,
+  .js-reveal .reveal:not(.is-in),
+  .js-reveal .reveal-group:not(.is-in) .reveal-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* Translucent chrome gets frostier, not blurrier, when the user asks for
+   less transparency. apple-design §14. */
+@media (prefers-reduced-transparency: reduce) {
+  .nav-glass,
+  .sticky-cta {
+    background: var(--color-bg) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
