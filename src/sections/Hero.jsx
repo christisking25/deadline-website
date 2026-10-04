@@ -76,10 +76,13 @@ export default function Hero() {
   const phoneY = useSpring(rawY, { stiffness: 120, damping: 26, mass: 0.5 });
 
   return (
+    /* Short bottom pad on purpose. CallOut is the hero's punchline, not a new
+       topic, so the two share one gap instead of each paying for a full
+       section break. CallOut's top pad is cut to match. */
     <section
       id="top"
       ref={sectionRef}
-      className="relative pb-[var(--s8)] pt-[104px] lg:pb-[var(--s9)] lg:pt-[128px]"
+      className="relative pb-[var(--s7)] pt-[104px] lg:pb-[var(--s8)] lg:pt-[128px]"
       style={{ overflowX: "clip" }}
     >
       <Glow

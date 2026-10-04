@@ -94,9 +94,24 @@ const STATS = [
 
 export default function CallOut() {
   return (
-    <section className="section-pad relative overflow-hidden">
+    /* Top pad is deliberately shorter than section-pad's. This section
+       finishes the hero's sentence, so it opens close under it; the full
+       section-pad stays on the bottom, where the real break is. */
+    <section className="section-pad relative overflow-hidden pt-[var(--s7)] lg:pt-[var(--s8)]">
       <Glow
         style={{ top: "10%", left: "50%", width: 760, height: 520, transform: "translateX(-50%)", opacity: 0.55 }}
+      />
+
+      {/* Carries the hero's line down into the heading so the gap reads as one
+          continuous drop rather than two stacked sections. Same gold thread as
+          the connector in HowItWorks. */}
+      <div
+        aria-hidden="true"
+        className="absolute left-1/2 top-0 h-[var(--s7)] w-px -translate-x-1/2 lg:h-[var(--s8)]"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(251,174,60,0) 0%, rgba(251,174,60,0.5) 100%)",
+        }}
       />
 
       <div className="container-d relative">

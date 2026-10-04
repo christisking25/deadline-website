@@ -124,8 +124,22 @@ export default function FAQ() {
   };
 
   return (
-    <section id="faq" className="section-pad relative overflow-hidden">
+    /* Trimmed bottom pad: the CTA underneath opens with its own ramp, and two
+       full section breaks back to back left the CTA stranded. */
+    <section id="faq" className="section-pad relative overflow-hidden pb-[var(--s8)] lg:pb-[var(--s9)]">
       <Glow style={{ top: "8%", right: "-12%", width: 540, height: 540, opacity: 0.4 }} />
+
+      {/* Upper half of the thread into the final CTA. Starts from nothing under
+          the last question and hands off at the section boundary, where
+          FinalCTA picks it up at the same opacity. */}
+      <div
+        aria-hidden="true"
+        className="absolute bottom-0 left-1/2 h-[var(--s8)] w-px -translate-x-1/2 lg:h-[var(--s9)]"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(251,174,60,0) 0%, rgba(251,174,60,0.3) 100%)",
+        }}
+      />
 
       <div className="container-d relative">
         <SectionHeading title="The questions you are already asking." />

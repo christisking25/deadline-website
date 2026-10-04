@@ -42,8 +42,38 @@ export default function FinalCTA() {
   return (
     <section
       id="download"
-      className="relative overflow-hidden px-5 py-28 sm:py-36 lg:py-44"
+      className="relative overflow-hidden px-5 pb-28 pt-20 sm:pb-32 sm:pt-24 lg:pb-36 lg:pt-28"
     >
+      {/* This used to be sealed top and bottom with hairlines, which fenced it
+          off as a slab sitting in the middle of nothing. Instead the page
+          surface ramps up into a raised plate and hands over to the footer's
+          border, so the CTA reads as the floor of the page rather than an
+          island on it.
+
+          The ramp resolves early, by 16%, on purpose: the air above the icon
+          has to already be *inside* this section, or it reads as the same raw
+          page void that made the section look like it was floating. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.022) 16%, rgba(255,255,255,0.03) 58%, rgba(255,255,255,0.038) 100%)",
+        }}
+      />
+
+      {/* Lower half of the thread that starts in the FAQ's bottom padding, so
+          the two sections are stitched across the seam instead of stacked.
+          Lands in the icon's bloom. Same motif as the hero / CallOut seam. */}
+      <div
+        aria-hidden="true"
+        className="absolute left-1/2 top-0 h-20 w-px -translate-x-1/2 sm:h-24 lg:h-28"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(251,174,60,0.3) 0%, rgba(251,174,60,0.5) 100%)",
+        }}
+      />
+
       <Glow
         className="animate-pulse-glow"
         style={{
@@ -54,9 +84,6 @@ export default function FinalCTA() {
           transform: "translate(-50%,-50%)",
         }}
       />
-      {/* Hairlines top and bottom to seal the section */}
-      <div className="hairline absolute inset-x-0 top-0" aria-hidden="true" />
-      <div className="hairline absolute inset-x-0 bottom-0" aria-hidden="true" />
 
       <div className="container-d relative flex flex-col items-center text-center">
         <IconMark />
