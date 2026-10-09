@@ -2,9 +2,11 @@ import { InstagramLink, Logo } from "../components/primitives";
 
 const NAV = [
   { href: "#how", label: "How it works" },
-  { href: "#modes", label: "Modes" },
-  { href: "#tiers", label: "Tiers" },
-  { href: "#location", label: "Location" },
+  { href: "#focus", label: "Focus" },
+  { href: "#taplatch", label: "TapLatch" },
+  { href: "#location", label: "Location locks" },
+  { href: "#technology", label: "Technology" },
+  { href: "#privacy", label: "Privacy" },
   { href: "#faq", label: "FAQ" },
 ];
 

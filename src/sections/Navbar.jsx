@@ -4,9 +4,9 @@ import { AppIcon, InstagramLink, Logo, EASE } from "../components/primitives";
 
 const LINKS = [
   { href: "#how", label: "How it works" },
-  { href: "#modes", label: "Modes" },
-  { href: "#tiers", label: "Tiers" },
-  { href: "#privacy", label: "Privacy" },
+  { href: "#focus", label: "Focus" },
+  { href: "#taplatch", label: "TapLatch" },
+  { href: "#technology", label: "Technology" },
 ];
 
 export default function Navbar() {

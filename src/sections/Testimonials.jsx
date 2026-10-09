@@ -1,137 +1,18 @@
-import { useReducedMotion } from "framer-motion";
-import { SectionHeading, Glow } from "../components/primitives";
+import { Glow, Reveal, SectionHeading } from "../components/primitives";
 
 /* ============================================================================
-   ILLUSTRATIVE REVIEWS, NOT REAL ONES.
+   EMPTY ON PURPOSE.
 
-   The names, courses and quotes below are written examples. They are shaped
-   like real App Store reviews so the layout is final, but nobody said them.
+   This section used to hold four written-from-scratch quotes attributed to
+   named students. Nobody said them, so they are gone. Attributing invented
+   quotes to named people and presenting them as credible is deceptive to
+   visitors, and for App Store marketing it is a takedown and FTC risk.
 
-   DO NOT remove the "Illustrative" label above this section until these are
-   replaced with real reviews. Attributing invented quotes to named students
-   and presenting them as credible is deceptive to visitors, and for App Store
-   marketing it is a takedown and FTC risk. Swapping in real reviews is a
-   one-line change: replace this array and delete the `isIllustrative` flag
-   passed to the heading below.
+   To fill this in: replace the empty state below with real App Store reviews,
+   quoted as written and attributed to the reviewer's real App Store name. Do
+   not reintroduce placeholder quotes, not even temporarily, and not even with
+   an "illustrative" label on them.
    ========================================================================= */
-const REVIEWS = [
-  {
-    quote:
-      "I had a 4,000 word chapter and three weeks of nothing. The 24 hour lock the day before was the only reason it got written.",
-    name: "Sarah Chen",
-    course: "HIST 2400",
-  },
-  {
-    quote:
-      "No Excuses mode is brutal and that is exactly why it works. I could not talk my way out of it at 6 AM, so I went.",
-    name: "Marcus W.",
-    course: "CS 101",
-  },
-  {
-    quote:
-      "Every other screen time app I tried, I disabled within two days. This one does not let you, which is the entire point I was missing.",
-    name: "Priya Raman",
-    course: "MATH 235",
-  },
-  {
-    quote:
-      "The gym geofence changed it for me. My apps stay dead until I am actually inside the building. No more deciding in the parking lot.",
-    name: "Diego Alvarez",
-    course: "KIN 1270",
-  },
-];
-
-/** Initials circle. Amber fill, white letters, same mark on every card. */
-function Avatar({ name }) {
-  const initials = name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
-
-  return (
-    <span
-      aria-hidden="true"
-      className="grid h-10 w-10 shrink-0 place-items-center rounded-full"
-      style={{
-        background: "var(--color-amber)",
-        color: "#FFFFFF",
-        fontFamily: "var(--font-display)",
-        fontWeight: 800,
-        fontSize: 14,
-        letterSpacing: "0.01em",
-      }}
-    >
-      {initials}
-    </span>
-  );
-}
-
-function QuoteCard({ q }) {
-  return (
-    <figure className="card-d card-hover flex w-[300px] shrink-0 flex-col p-6 sm:w-[380px] sm:p-7">
-      <svg
-        width="26"
-        height="26"
-        viewBox="0 0 24 24"
-        fill="#FBAE3C"
-        className="mb-5 opacity-60"
-        aria-hidden="true"
-      >
-        <path d="M9.5 5C6.4 6.4 4.5 9.3 4.5 13v6h7v-7H7.8c.2-2.3 1.3-3.9 3.2-4.8L9.5 5Zm9 0c-3.1 1.4-5 4.3-5 8v6h7v-7h-3.7c.2-2.3 1.3-3.9 3.2-4.8L18.5 5Z" />
-      </svg>
-
-      <blockquote className="mb-6 flex-1 text-[16px] leading-relaxed text-ink/90">
-        {q.quote}
-      </blockquote>
-
-      <figcaption className="flex items-center gap-3">
-        <Avatar name={q.name} />
-        <span className="min-w-0">
-          <span className="block truncate text-[14px] font-semibold text-ink">
-            {q.name}
-          </span>
-          <span className="block truncate text-[13px] text-muted">
-            {q.course}
-          </span>
-        </span>
-      </figcaption>
-    </figure>
-  );
-}
-
-/** Seamless marquee row. Duplicated track, translated -50%, wraps cleanly. */
-function Row({ items, duration, reverse = false }) {
-  const reduce = useReducedMotion();
-
-  if (reduce) {
-    // Static, horizontally scrollable fallback. No animation, still reachable.
-    return (
-      <div className="flex gap-5 overflow-x-auto pb-2">
-        {items.map((q, i) => (
-          <QuoteCard key={i} q={q} />
-        ))}
-      </div>
-    );
-  }
-
-  // Duration and direction ride in as custom properties so the inline style
-  // never clobbers animation-play-state, which is what drives hover-to-pause.
-  return (
-    <div
-      className="marquee-row flex gap-5"
-      style={{
-        "--marquee-duration": `${duration}s`,
-        "--marquee-direction": reverse ? "reverse" : "normal",
-      }}
-    >
-      {[...items, ...items].map((q, i) => (
-        <QuoteCard key={i} q={q} />
-      ))}
-    </div>
-  );
-}
 
 export default function Testimonials() {
   return (
@@ -140,29 +21,43 @@ export default function Testimonials() {
 
       <div className="container-d relative">
         <SectionHeading
-          eyebrow="Illustrative"
           title="What people say."
-          lede="Written examples, shown to set the layout. Real App Store reviews replace them at launch."
+          lede="Deadline is not out yet, so there is nothing here. Real App Store reviews go in this space once people have actually used it."
         />
-      </div>
 
-      <div
-        className="relative mt-14 flex flex-col gap-5 lg:mt-16"
-        style={{
-          maskImage:
-            "linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent)",
-          WebkitMaskImage:
-            "linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent)",
-        }}
-      >
-        <Row items={REVIEWS} duration={52} />
-        <Row items={[...REVIEWS].reverse()} duration={64} reverse />
-      </div>
+        <Reveal delay={0.08}>
+          <div
+            className="mx-auto mt-14 flex max-w-[640px] flex-col items-center gap-[var(--s4)] rounded-2xl px-[var(--s6)] py-[var(--s8)] text-center lg:mt-16"
+            style={{
+              border: "1px dashed rgba(255,255,255,0.14)",
+              background: "rgba(20,20,22,0.4)",
+            }}
+          >
+            <span
+              aria-hidden="true"
+              className="grid h-12 w-12 place-items-center rounded-full border border-hairline text-muted"
+            >
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.3 9.3 0 0 1-2.8-.4L4 21l1.6-4a8.2 8.2 0 0 1-1.6-5 8.4 8.4 0 0 1 8.5-8.4A8.4 8.4 0 0 1 21 11.5Z" />
+              </svg>
+            </span>
 
-      <div className="container-d">
-        <p className="mx-auto mt-10 max-w-[52ch] text-center text-[13px] text-muted">
-          Illustrative only. These are not real reviews yet.
-        </p>
+            <p className="text-[19px] font-semibold text-ink">No reviews yet.</p>
+            <p className="max-w-[46ch] text-[15px] leading-relaxed text-muted">
+              We would rather show you an empty box than quotes we wrote
+              ourselves.
+            </p>
+          </div>
+        </Reveal>
       </div>
     </section>
   );

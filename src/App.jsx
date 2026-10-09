@@ -8,12 +8,12 @@ import BackToTop from "./components/BackToTop";
    screenful and the section right under it. Everything below the fold is
    code-split and streamed in as the visitor scrolls. */
 const HowItWorks = lazy(() => import("./sections/HowItWorks"));
-const Escalation = lazy(() => import("./sections/Escalation"));
-const Tiers = lazy(() => import("./sections/Tiers"));
-const Modes = lazy(() => import("./sections/Modes"));
+const Focus = lazy(() => import("./sections/Focus"));
+const TapLatch = lazy(() => import("./sections/TapLatch"));
 const LocationLock = lazy(() => import("./sections/LocationLock"));
-const Testimonials = lazy(() => import("./sections/Testimonials"));
+const Technology = lazy(() => import("./sections/Technology"));
 const Privacy = lazy(() => import("./sections/Privacy"));
+const Testimonials = lazy(() => import("./sections/Testimonials"));
 const FAQ = lazy(() => import("./sections/FAQ"));
 const FinalCTA = lazy(() => import("./sections/FinalCTA"));
 const Footer = lazy(() => import("./sections/Footer"));
@@ -29,12 +29,12 @@ function Placeholder({ h = 600 }) {
    and the page stops reflowing underneath them. */
 const PREFETCH = [
   () => import("./sections/HowItWorks"),
-  () => import("./sections/Escalation"),
-  () => import("./sections/Tiers"),
-  () => import("./sections/Modes"),
+  () => import("./sections/Focus"),
+  () => import("./sections/TapLatch"),
   () => import("./sections/LocationLock"),
-  () => import("./sections/Testimonials"),
+  () => import("./sections/Technology"),
   () => import("./sections/Privacy"),
+  () => import("./sections/Testimonials"),
   () => import("./sections/FAQ"),
   () => import("./sections/FinalCTA"),
   () => import("./sections/Footer"),
@@ -79,28 +79,29 @@ export default function App() {
           <HowItWorks />
         </Suspense>
 
+        {/* The two pillars, in the order the product leads with them. */}
         <Suspense fallback={<Placeholder h={900} />}>
-          <Escalation />
+          <Focus />
         </Suspense>
 
-        <Suspense fallback={<Placeholder h={700} />}>
-          <Tiers />
-        </Suspense>
-
-        <Suspense fallback={<Placeholder h={700} />}>
-          <Modes />
+        <Suspense fallback={<Placeholder h={800} />}>
+          <TapLatch />
         </Suspense>
 
         <Suspense fallback={<Placeholder h={700} />}>
           <LocationLock />
         </Suspense>
 
-        <Suspense fallback={<Placeholder h={600} />}>
-          <Testimonials />
+        <Suspense fallback={<Placeholder h={900} />}>
+          <Technology />
         </Suspense>
 
         <Suspense fallback={<Placeholder h={700} />}>
           <Privacy />
+        </Suspense>
+
+        <Suspense fallback={<Placeholder h={600} />}>
+          <Testimonials />
         </Suspense>
 
         <Suspense fallback={<Placeholder h={700} />}>

@@ -1,36 +1,36 @@
 import { useRef } from "react";
-import { motion, useScroll, useSpring, useTransform, useReducedMotion } from "framer-motion";
-import { Glow, Reveal, SectionHeading } from "../components/primitives";
+import { motion, useScroll, useSpring, useReducedMotion } from "framer-motion";
+import { Glow, SectionHeading } from "../components/primitives";
 import { Phone } from "../components/Phone";
 import {
-  SubmittedScreen,
-  DeadlinesTabScreen,
-  ProofScreen,
+  CommitmentScreen,
+  ShieldScreen,
+  WalkProofScreen,
 } from "../components/screens";
 
 const STEPS = [
   {
     n: "01",
-    title: "Set it.",
-    body: "Pick a deadline, a gym goal, or a study session. Choose which apps go dark. Takes about forty seconds. This is what it looks like when it has worked.",
+    title: "Commit to something.",
+    body: "A gym session, a walk, a study block, an hour off social. Choose which apps go dark while it runs. Takes about forty seconds.",
     detail: "Works with any app on your phone. Pick one. Pick thirty.",
-    screen: <SubmittedScreen />,
+    screen: <CommitmentScreen />,
     time: "9:41",
   },
   {
     n: "02",
-    title: "Feel it.",
-    body: "Apps lock for longer as the date gets closer. Four days out it is a nudge. The day before, it is most of your day.",
-    detail: "The pressure is the product. It arrives whether you are ready or not.",
-    screen: <DeadlinesTabScreen />,
+    title: "Lose the apps.",
+    body: "The apps you picked stop opening. Not hidden behind a reminder, not greyed out with a tap-through. Shut, at the level the operating system enforces.",
+    detail: "Force quitting Deadline does not lift the lock. Neither does airplane mode.",
+    screen: <ShieldScreen />,
     time: "10:08",
   },
   {
     n: "03",
-    title: "Prove it.",
-    body: "Submit proof to unlock. A photo, your location, or a finished session. Deadline checks it, then gives your apps back.",
+    title: "Earn them back.",
+    body: "Arrive where you said you would, cover the distance you promised, let the session run out, or tap your TapLatch card. Then your apps come back.",
     detail: "Nothing opens on your word alone. That was the whole problem.",
-    screen: <ProofScreen />,
+    screen: <WalkProofScreen />,
     time: "6:14",
   },
 ];
@@ -139,8 +139,8 @@ export default function HowItWorks() {
               className="max-w-[58ch] text-[14px] italic leading-relaxed"
               style={{ color: "#808080" }}
             >
-              Your step count does not count as proof. Deadline uses
-              radius-based location verification instead of steps.
+              Your step count does not count as proof. Deadline measures real
+              distance and real position instead of steps.
             </p>
           </div>
         </div>

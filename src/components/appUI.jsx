@@ -4,10 +4,9 @@
  *
  * Sources:
  *   Deadline/UI/Theme.swift          TagPill, CardBackground
- *   Deadline/UI/DeadlineListView.swift   AssignmentRow, section headers
  *   Deadline/UI/GymListView.swift        GymRow, LearnedGymsCard
  *   Deadline/UI/DowntimeListView.swift   ActiveDowntimeCard, LocationLockCard
- *   Deadline/UI/FocusListView.swift      FocusSectionHeader
+ *   Deadline/UI/FocusListView.swift      FocusSectionHeader, section headers
  *   Deadline/UI/RootView.swift           tab bar
  */
 
@@ -23,13 +22,6 @@ export const APP = {
   green: "#30D158",
   blue: "#5AA0FF",
   orange: "#FF8A3D",
-};
-
-/* Palette.tierColor: a blue to amber to red escalation ramp. */
-export const TIER = {
-  GENTLE: APP.blue,
-  STRICT: APP.amber,
-  "NO EXCUSES": APP.red,
 };
 
 const rounded = "var(--font-display)";
@@ -65,11 +57,14 @@ export function Icon({ name, size = 18, color = "currentColor", weight = 1.8 }) 
           <path d="M12 5.5v13M5.5 12h13" />
         </svg>
       );
-    case "calendar":
+    case "nfc":
+      /* A card held against the phone, with the two radio arcs the tap
+         throws. Same 24px grid and 1.5ish stroke as the rest. */
       return (
         <svg {...common}>
-          <rect x="3" y="5" width="18" height="16" rx="3" />
-          <path d="M3 10h18M8 3v4M16 3v4" />
+          <rect x="2.5" y="6" width="12.5" height="12" rx="2.6" />
+          <path d="M18 8.6a5 5 0 0 1 0 6.8" />
+          <path d="M20.8 6a8.4 8.4 0 0 1 0 12" />
         </svg>
       );
     case "flame":
@@ -213,26 +208,23 @@ export function AppCard({ children, tint = APP.hairline, style, accent, delay = 
   );
 }
 
-/* ------------------------------------------------- assignment row
-   AssignmentRow: 3px accent bar, 16 semibold title, 13 muted course,
-   tier pill, right-aligned 13 bold rounded countdown + 11 muted date. */
+/* ------------------------------------------------- commitment row
+   CommitmentRow: 3px accent bar, 15 semibold title, 12 muted detail line,
+   right-aligned release condition in 11.5 semibold rounded. */
 
-export function AssignmentRow({
+export function CommitmentRow({
   title,
-  course,
-  tier = "STRICT",
-  extraPill,
-  countdown,
-  date,
-  accent,
+  detail,
+  pill,
+  release,
+  accent = APP.amber,
   dim = 0,
   delay = 0,
 }) {
-  const color = accent ?? TIER[tier] ?? APP.amber;
   return (
     <AppCard
-      accent={color}
-      tint={color}
+      accent={accent}
+      tint={accent}
       delay={delay}
       style={{ opacity: 1 - dim }}
     >
@@ -241,7 +233,7 @@ export function AssignmentRow({
           <div
             style={{
               fontFamily: text,
-              fontSize: 14,
+              fontSize: 14.5,
               fontWeight: 600,
               color: APP.ink,
               lineHeight: 1.25,
@@ -260,52 +252,30 @@ export function AssignmentRow({
               fontFamily: text,
               fontSize: 11.5,
               color: APP.muted,
-              marginBottom: 7,
+              marginBottom: pill ? 7 : 0,
             }}
           >
-            {course}
+            {detail}
           </div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <TagPill text={tier} color={TIER[tier] ?? APP.amber} />
-            {extraPill ? (
-              <TagPill text={extraPill.text} color={extraPill.color} />
-            ) : null}
-          </div>
+          {pill ? <TagPill text={pill.text} color={pill.color} /> : null}
         </div>
 
-        <div
-          style={{
-            textAlign: "right",
-            flexShrink: 0,
-            maxWidth: 92,
-          }}
-        >
+        {release ? (
           <div
             style={{
               fontFamily: rounded,
-              fontWeight: 700,
-              fontSize: 12,
-              color,
-              fontVariantNumeric: "tabular-nums",
-              marginBottom: 3,
-              whiteSpace: "nowrap",
+              fontWeight: 600,
+              fontSize: 11.5,
+              color: accent,
+              textAlign: "right",
+              maxWidth: 106,
+              lineHeight: 1.35,
+              flexShrink: 0,
             }}
           >
-            {countdown}
+            {release}
           </div>
-          {date ? (
-            <div
-              style={{
-                fontFamily: text,
-                fontSize: 10,
-                color: APP.muted,
-                whiteSpace: "nowrap",
-              }}
-            >
-              {date}
-            </div>
-          ) : null}
-        </div>
+        ) : null}
       </div>
     </AppCard>
   );
@@ -363,10 +333,10 @@ export function AppNavBar({ title, showAdd = true }) {
 }
 
 /** Floating pill tab bar. Active tab is amber on a lighter pill. */
-export function AppTabBar({ active = "Deadlines" }) {
+export function AppTabBar({ active = "Focus" }) {
   const tabs = [
-    { label: "Deadlines", icon: "calendar" },
     { label: "Focus", icon: "flame" },
+    { label: "TapLatch", icon: "nfc" },
     { label: "History", icon: "chart" },
   ];
   return (

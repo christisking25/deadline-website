@@ -1,10 +1,22 @@
 import { Glow, SectionHeading, Stagger, StaggerItem, Reveal } from "../components/primitives";
 
 const FACTS = [
-  { k: "No accounts", v: "There is nothing to sign up for. No email, no password, no profile." },
-  { k: "No tracking", v: "No analytics SDK, no event pipeline, no behavioural logging." },
-  { k: "No ads", v: "Nobody is bidding on your attention here. That would be the joke of the century." },
-  { k: "No third-party SDKs", v: "Nothing from an ad network, a data broker, or an attribution vendor." },
+  {
+    k: "No accounts, no cloud",
+    v: "There is nothing to sign up for. No email, no password, no profile, and no sync. Everything lives on the one phone you installed it on.",
+  },
+  {
+    k: "Nothing is transmitted",
+    v: "Your location, your TapLatch card, and your Screen Time locks are read and acted on your device. None of it is sent to a server, because there is no server.",
+  },
+  {
+    k: "We have no access",
+    v: "Not restricted access or anonymised access. None. There is no copy of your data on our side to look at, lose, subpoena, or sell.",
+  },
+  {
+    k: "No tracking, no third-party SDKs",
+    v: "No analytics, no event pipeline, no behavioural logging, and nothing from an ad network, a data broker, or an attribution vendor.",
+  },
 ];
 
 /** Big lock mark with a slow gold sweep across the shackle. */
@@ -62,7 +74,7 @@ export default function Privacy() {
       <div className="container-d relative">
         <SectionHeading
           title="Your data never leaves your phone."
-          lede="Deadline works because it watches what you do. That is also exactly why none of it is ours to keep. Everything stays on device."
+          lede="Deadline works because it watches what you do. That is also exactly why none of it is ours to keep. Your location data, your card, and your Screen Time data stay on the device, and we cannot see any of it."
         />
 
         <div className="mt-16 grid items-center gap-12 lg:mt-20 lg:grid-cols-[0.85fr_1fr] lg:gap-20">

@@ -65,13 +65,13 @@
 
   /* Palette.amber: the brand tint, matched to the sand in the app icon. */
   --color-amber: #fbae3c;
-  /* Palette.red: escalation only. Tier 3 and overdue work. Never a general accent. */
+  /* Palette.red: lockdown moments only. Never a general accent. */
   --color-red: #ff453a;
   /* Palette.green: submitted / done. */
   --color-green: #30d158;
-  /* Palette.blue: Gentle tier, gym, far-off deadlines. */
+  /* Palette.blue: gym commitments. */
   --color-blue: #5aa0ff;
-  /* Intermediate rungs of the escalation ramp. */
+  /* Warm intermediates, between amber and red. */
   --color-orange: #ff8a3d;
   --color-deep-orange: #ff6b4a;
 
@@ -268,7 +268,7 @@
     white-space: nowrap;
   }
 
-  /* Buttons are capsules, like the app's tier pills and tab bar. */
+  /* Buttons are capsules, like the app's tag pills and tab bar. */
   .btn-amber {
     display: inline-flex;
     align-items: center;

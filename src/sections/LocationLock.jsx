@@ -52,8 +52,9 @@ export default function LocationLock() {
 
       <div className="container-d relative">
         <SectionHeading
+          eyebrow="Focus · Location locks"
           title="Your phone knows where you should be."
-          lede="Deadline reads your location on device to decide when to lock and when to let go. The coordinates never leave your phone."
+          lede="Name a place and let the building do the discipline. Deadline reads your position on the device to decide when to lock and when to let go. The coordinates never leave your phone, and no route is kept."
         />
 
         <div className="mt-16 grid items-center gap-10 lg:mt-20 lg:grid-cols-[1fr_1.05fr] lg:gap-16">

@@ -109,10 +109,22 @@ export default function Hero() {
 
           <Reveal as="p" delay={140} className="t-lede mt-[var(--s5)] max-w-[46ch]">
             You said you&rsquo;d study. You said you&rsquo;d hit the gym. You
-            said you&rsquo;d start the assignment early.{" "}
+            said you&rsquo;d put the phone down an hour ago.{" "}
             <span className="text-ink">
               Deadline locks your apps until you actually do it.
             </span>
+          </Reveal>
+
+          <Reveal as="p" delay={175} className="mt-[var(--s4)] max-w-[46ch] text-[15px] leading-relaxed text-muted">
+            Two ways to get them back:{" "}
+            <a href="#focus" className="font-semibold text-amber underline-offset-4 transition-all duration-200 hover:underline focus-visible:underline">
+              Focus
+            </a>{" "}
+            releases them when you prove you showed up.{" "}
+            <a href="#taplatch" className="font-semibold text-amber underline-offset-4 transition-all duration-200 hover:underline focus-visible:underline">
+              TapLatch
+            </a>{" "}
+            releases them when you tap a physical card.
           </Reveal>
 
           <Reveal

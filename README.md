@@ -6,7 +6,7 @@ Static marketing site for the Deadline iOS app. Lives at **hitdeadline.com**.
 
 - Vite 6 + React 18
 - Tailwind CSS v4 (via `@tailwindcss/vite`)
-- Framer Motion for scroll reveals, the escalation scrub, and the marquee
+- Framer Motion for scroll reveals, the hero parallax, and the marquee
 - Zero runtime dependencies beyond those. No CMS, no analytics, no tracking.
 
 ## Commands
@@ -19,6 +19,33 @@ npm run preview  # serve the built dist/ locally
 ```
 
 **The build output folder is `dist/`.** That is the folder GitHub Pages serves.
+
+## Structure
+
+The site is one page, built around the app's two features:
+
+- **Focus** (`src/sections/Focus.jsx`): commitments that lock your apps and
+  release them on proof. Location locks get their own section underneath
+  (`src/sections/LocationLock.jsx`).
+- **TapLatch** (`src/sections/TapLatch.jsx`): the physical NFC card.
+- **Technology** (`src/sections/Technology.jsx`): how the enforcement works,
+  plus the data sovereignty claim. **Every claim in that section has to match
+  the privacy policy.** They are edited together or not at all.
+
+### The privacy policy does NOT deploy from this repo
+
+`index copy.html` is a **local working draft only**. Nothing in this repo
+publishes it: Vite builds `index.html` alone, and this repo's `public/CNAME`
+binds it to `hitdeadline.com`.
+
+The live policy at **privacy.hitdeadline.com** is served by a separate repo,
+`christisking25/deadline-privacy`, from `index.html` on its `main` branch
+(GitHub Pages, source `main` / root, its own `CNAME`).
+
+**So editing `index copy.html` changes nothing in production.** To ship a
+policy change, copy the edited body into `index.html` in `deadline-privacy`
+and push there. Keep the two in sync, and keep both in sync with the claims in
+`src/sections/Technology.jsx`.
 
 ## Design system
 
@@ -52,9 +79,10 @@ hand-merged, so re-run it only if you intend to redo that merge.
 
 Three things in the code are deliberately unfinished and marked with comments:
 
-1. **Testimonials** (`src/sections/Testimonials.jsx`) are placeholder quotes.
-   Replace with real App Store reviews or delete the section. Do not ship
-   invented quotes as real reviews.
+1. **Testimonials** (`src/sections/Testimonials.jsx`) is a deliberate empty
+   state. The invented quotes that used to live there have been removed. Fill
+   it with real App Store reviews after launch. Do not put placeholder quotes
+   back, even labelled as illustrative.
 2. **Pricing FAQ** (`src/sections/FAQ.jsx`) has a TODO on the "Is it free?"
    answer. Fill in the real model and update the FAQ JSON-LD in the same file.
 3. **App Store links** are `href="#"` in `src/sections/Hero.jsx` and

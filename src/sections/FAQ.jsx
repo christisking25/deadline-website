@@ -4,24 +4,32 @@ import { Glow, SectionHeading, Reveal, EASE } from "../components/primitives";
 
 const ITEMS = [
   {
-    q: "Can I turn it off whenever I want?",
-    a: "That depends entirely on the tier you picked. On Gentle, yes, instantly, because Gentle never locks anything. On Strict you can override, but you have to write out why you are quitting on yourself before the apps come back. On No Excuses there is no override at all. You chose that, and Deadline holds you to it.",
+    q: "What is the difference between Focus and TapLatch?",
+    a: "Focus is the software half. You commit to something real, your apps go dark while it runs, and they come back when your phone can tell you followed through. TapLatch is the physical half: a card you tap to lock your apps and tap again to unlock them. Focus asks you for proof. TapLatch asks you to get up and go get the card. You can use either one, or both.",
   },
   {
     q: "Which apps can it lock?",
     a: "Any app you choose. Pick one, pick thirty. Most people start with the obvious offenders, then quietly add the ones they were pretending were not a problem.",
   },
   {
+    q: "Can I just force quit the app to get around it?",
+    a: "No. The lock is written into Apple's own Screen Time restrictions, so it is the operating system holding your apps shut, not Deadline standing in front of them. Closing Deadline, swiping it out of the app switcher, and deleting it from your home screen all leave the restriction exactly where it was.",
+  },
+  {
     q: "Does it work offline?",
     a: "Yes. Deadline runs entirely on your device, so airplane mode, dead Wi-Fi, and no signal change nothing. Locks hold. Turning off the internet is not a loophole.",
   },
   {
-    q: "Is my data shared?",
-    a: "No. Everything stays on device. No accounts, no analytics, no third-party SDKs, no ad networks. Your schedules, your locations, and your proof submissions never leave your phone.",
+    q: "What counts as proof?",
+    a: "It depends on what you committed to. For a gym session or a place, arriving there. For a walk, covering the distance you said you would, measured live from where you started. For a study block, letting the session run out. For commitments where there is nothing to measure, your own word, logged deliberately rather than tapped past.",
   },
   {
-    q: "What happens on the due date?",
-    a: "On Strict and No Excuses, full lockdown. Every app you selected is shut until the work is done and proven. On Gentle you get a notification, because Gentle never locks anything. The due date is the point of the whole system, so this is where the tiers separate hardest.",
+    q: "What happens if I lose my TapLatch card?",
+    a: "You pair a new one on your phone and the old card stops controlling anything. Nothing about your card is registered outside your device, so a lost card is a lost piece of plastic, not a lost key to your account. There is no account.",
+  },
+  {
+    q: "Is my data shared?",
+    a: "No. Everything stays on device. No accounts, no cloud sync, no analytics, no third-party SDKs, no ad networks. Your commitments, your location, your card, and your Screen Time locks never leave your phone, and we have no access to any of it.",
   },
   {
     // TODO: Pricing is not finalised. Replace this answer with the real model

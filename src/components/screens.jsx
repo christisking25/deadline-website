@@ -7,12 +7,11 @@ import {
   AppCard,
   AppNavBar,
   AppTabBar,
-  AssignmentRow,
+  CommitmentRow,
   DetailRow,
   Icon,
   SectionHeader,
   TagPill,
-  TIER,
 } from "./appUI";
 
 /* Real Deadline screens, rebuilt in HTML and CSS from the SwiftUI source.
@@ -51,6 +50,21 @@ function useTicker(startSeconds, enabled = true) {
   return s;
 }
 
+/** Counts a distance up and holds at the target, for the walk proof screen. */
+function useDistance(from, to, enabled = true) {
+  const reduce = useReducedMotion();
+  const [m, setM] = useState(reduce ? to : from);
+  useEffect(() => {
+    if (reduce || !enabled) return;
+    const id = setInterval(
+      () => setM((v) => (v >= to ? from : Math.min(to, v + 4))),
+      420,
+    );
+    return () => clearInterval(id);
+  }, [reduce, enabled, from, to]);
+  return m;
+}
+
 /* =================================================================
    1. The Screen Time shield.
    Copy and layout from ShieldPresentation.swift and
@@ -59,19 +73,17 @@ function useTicker(startSeconds, enabled = true) {
    black on the accent. The title is always "Locked in."
    ================================================================= */
 export function ShieldScreen({
-  subtitle = "Submit your assignment to unlock.\nMATH 235 · Problem Set 6 · Due in 2d 23h",
+  subtitle = "Walk 500 m to unlock.\n180 m to go.",
   urgent = false,
   live = false,
 }) {
   const accent = urgent ? APP.red : APP.amber;
-  const secs = useTicker(4 * 3600 + 17 * 60 + 9, live);
+  const secs = useTicker(72 * 60 + 9, live);
 
-  // DurationText.relativeToDue over a live clock. compact() collapses to at
-  // most two adjacent units, so this reads "Due in 1d 4h" like the real shield.
+  // DurationText.compact over a live clock, so this reads "1h 12m" the way
+  // the real shield does for a running session.
   const body = live
-    ? `Submit your assignment to unlock.\nMATH 235 · Problem Set 6 · Due in ${compact(
-        86400 + secs,
-      )}`
+    ? `Deep work: thesis chapter.\nApps unlock in ${compact(secs)}.`
     : subtitle;
 
   return (
@@ -150,8 +162,9 @@ export function HeroLockScreen() {
 }
 
 /* =================================================================
-   2. Set it: the New deadline sheet (AssignmentEditorView).
-   A grouped iOS form: Title, Course, Due date, Enforcement tier.
+   2. Commit it: the New commitment sheet.
+   A grouped iOS form: what you are committing to, how it releases,
+   and which apps go dark while it runs.
    ================================================================= */
 function FormRow({ label, value, valueColor = APP.ink, last = false }) {
   return (
@@ -216,7 +229,7 @@ function FormGroup({ header, children, footer }) {
   );
 }
 
-export function SetScreen() {
+export function CommitmentScreen() {
   return (
     <Shell style={{ padding: "0 16px 16px" }}>
       <div style={{ padding: "4px 2px 14px" }}>
@@ -229,29 +242,28 @@ export function SetScreen() {
             letterSpacing: "-0.02em",
           }}
         >
-          New deadline
+          New commitment
         </div>
       </div>
 
       <div style={{ overflow: "hidden", flex: 1 }}>
-        <FormGroup header="Assignment">
-          <FormRow label="Title" value="Problem Set 6" />
-          <FormRow label="Course" value="MATH 235" />
-          <FormRow label="Due" value="Fri 14 Oct, 11:59 PM" valueColor={APP.amber} last />
+        <FormGroup header="Commitment">
+          <div style={{ padding: "11px 13px", display: "flex", gap: 7, flexWrap: "wrap" }}>
+            <TagPill text="GYM" color={APP.blue} />
+            <TagPill text="WALK" color={APP.amber} />
+            <TagPill text="STUDY" color={APP.green} />
+          </div>
+          <FormRow label="Goal" value="Walk 500 m" valueColor={APP.amber} />
+          <FormRow label="Starts" value="Now" last />
         </FormGroup>
 
         <FormGroup
-          header="Enforcement tier"
-          footer="Apps lock for longer as the date gets closer. You can override, but you have to write out why."
+          header="How it releases"
+          footer="Your phone measures the distance itself. Nothing is sent anywhere, and nothing is stored."
         >
-          <div style={{ padding: "11px 13px", display: "flex", gap: 7 }}>
-            <TagPill text="GENTLE" color={APP.blue} />
-            <TagPill text="STRICT" color={APP.amber} />
-            <TagPill text="NO EXCUSES" color={APP.red} />
-          </div>
+          <FormRow label="Proof" value="Live location" />
           <div
             style={{
-              borderTop: `1px solid ${APP.hairline}`,
               padding: "10px 13px",
               display: "flex",
               alignItems: "center",
@@ -260,7 +272,7 @@ export function SetScreen() {
           >
             <Icon name="check" size={13} color={APP.amber} />
             <span style={{ fontFamily: text, fontSize: 12, color: APP.ink }}>
-              Strict selected
+              Apps return when you get there
             </span>
           </div>
         </FormGroup>
@@ -275,199 +287,246 @@ export function SetScreen() {
 }
 
 /* =================================================================
-   3. Feel it: the Deadlines tab (DeadlineListView).
+   3. Prove it: the live walk measurement.
+   The distance is read from Core Location on the device and compared
+   against the goal in the moment. Nothing is written down.
    ================================================================= */
-export function DeadlinesTabScreen() {
-  return (
-    <Shell>
-      <AppNavBar title="Deadline" />
+function ProgressRing({ value, total, label, sub }) {
+  const pct = Math.min(1, value / total);
+  const r = 58;
+  const c = 2 * Math.PI * r;
 
-      {/* The list scrolls under the floating tab bar, so the last row fades
-          out rather than being cut off square. */}
+  return (
+    <div style={{ position: "relative", display: "grid", placeItems: "center" }}>
+      <svg width="148" height="148" viewBox="0 0 148 148" aria-hidden="true">
+        <circle
+          cx="74"
+          cy="74"
+          r={r}
+          fill="none"
+          stroke={APP.hairline}
+          strokeWidth="9"
+        />
+        <circle
+          cx="74"
+          cy="74"
+          r={r}
+          fill="none"
+          stroke={APP.amber}
+          strokeWidth="9"
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - pct)}
+          transform="rotate(-90 74 74)"
+          style={{ transition: "stroke-dashoffset 400ms linear" }}
+        />
+      </svg>
+      <div style={{ position: "absolute", textAlign: "center" }}>
+        <div
+          style={{
+            fontFamily: rounded,
+            fontWeight: 800,
+            fontSize: 30,
+            color: APP.ink,
+            fontVariantNumeric: "tabular-nums",
+            lineHeight: 1,
+          }}
+        >
+          {label}
+        </div>
+        <div
+          style={{
+            fontFamily: text,
+            fontSize: 11.5,
+            color: APP.muted,
+            marginTop: 5,
+          }}
+        >
+          {sub}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function WalkProofScreen({ live = true }) {
+  const metres = useDistance(312, 500, live);
+
+  return (
+    /* The nav bar carries the app's own 18px gutter, so the padding here is
+       bottom only. Stacking both would inset the content twice. */
+    <Shell style={{ padding: "0 18px 16px" }}>
+      <div style={{ margin: "0 -18px" }}>
+        <AppNavBar title="Walk" showAdd={false} />
+      </div>
+
       <div
         style={{
           flex: 1,
           minHeight: 0,
-          overflow: "hidden",
-          padding: "0 18px",
           display: "flex",
           flexDirection: "column",
-          gap: 9,
-          maskImage: "linear-gradient(180deg,#000 86%,transparent 100%)",
-          WebkitMaskImage: "linear-gradient(180deg,#000 86%,transparent 100%)",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 18,
         }}
       >
-        <AssignmentRow
-          title="Problem Set 6"
-          course="MATH 235"
-          tier="STRICT"
-          countdown="Due in 2d 23h"
-          date="Fri 14 Oct"
-          delay={0}
-        />
-        <AssignmentRow
-          title="Lab report: titration"
-          course="CHEM 1040"
-          tier="NO EXCUSES"
-          countdown="Due in 19h"
-          date="Thu 12 Oct"
-          delay={70}
-        />
-        <AssignmentRow
-          title="Reading response 4"
-          course="PHIL 2070"
-          tier="GENTLE"
-          countdown="Due in 6d"
-          date="Mon 17 Oct"
-          delay={140}
+        <ProgressRing
+          value={metres}
+          total={500}
+          label={`${metres} m`}
+          sub="of 500 m"
         />
 
-        <SectionHeader style={{ marginTop: 2 }}>SUBMITTED</SectionHeader>
-        <AssignmentRow
-          title="Quiz 3 corrections"
-          course="MATH 235"
-          tier="STRICT"
-          extraPill={{ text: "DONE", color: APP.green }}
-          countdown="Submitted"
-          accent={APP.green}
-          dim={0.45}
-          delay={210}
-        />
+        <div style={{ textAlign: "center", padding: "0 10px" }}>
+          <div
+            style={{
+              fontFamily: text,
+              fontSize: 13.5,
+              fontWeight: 600,
+              color: APP.ink,
+              marginBottom: 5,
+            }}
+          >
+            {500 - metres} m to go
+          </div>
+          <p
+            style={{
+              fontFamily: text,
+              fontSize: 11,
+              lineHeight: 1.5,
+              color: APP.muted,
+              maxWidth: 210,
+              margin: "0 auto",
+            }}
+          >
+            Measured from where you started, live, on this phone. No route is
+            recorded.
+          </p>
+        </div>
       </div>
 
-      <AppTabBar active="Deadlines" />
+      <div
+        style={{
+          height: 44,
+          display: "grid",
+          placeItems: "center",
+          borderRadius: 999,
+          border: `1px solid ${APP.hairline}`,
+          color: APP.muted,
+          fontFamily: rounded,
+          fontWeight: 700,
+          fontSize: 14,
+          flexShrink: 0,
+        }}
+      >
+        Apps locked until you arrive
+      </div>
     </Shell>
   );
 }
 
 /* =================================================================
-   4. Prove it: ProofSubmissionView.
+   4. TapLatch: the card read.
+   Core NFC opens a reader session, the tag is matched against the
+   card you paired, and the locks flip. All of it on the device.
    ================================================================= */
-export function ProofScreen() {
+export function TapLatchScreen({ unlocked = false }) {
+  const accent = unlocked ? APP.green : APP.amber;
+
   return (
-    <Shell style={{ padding: "0 16px 16px" }}>
-      <div style={{ padding: "4px 2px 12px" }}>
-        <div
-          style={{
-            fontFamily: rounded,
-            fontWeight: 800,
-            fontSize: 19,
-            color: APP.ink,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          Proof of submission
-        </div>
-      </div>
-
-      <div style={{ textAlign: "center", marginBottom: 16 }}>
-        <div
-          style={{
-            fontFamily: text,
-            fontSize: 18,
-            fontWeight: 700,
-            color: APP.ink,
-            marginBottom: 3,
-          }}
-        >
-          Problem Set 6
-        </div>
-        <div style={{ fontFamily: text, fontSize: 13, color: APP.muted }}>
-          MATH 235
-        </div>
-      </div>
-
-      {/* Import dropzone: 34pt light glyph, then the two copy lines. */}
-      <div
-        style={{
-          background: APP.surface,
-          border: `1px dashed ${APP.hairline}`,
-          borderRadius: 16,
-          padding: "20px 16px",
-          textAlign: "center",
-          marginBottom: 14,
-        }}
-      >
-        <div style={{ display: "grid", placeItems: "center", marginBottom: 9 }}>
-          <Icon name="camera" size={30} color={APP.muted} weight={1.3} />
-        </div>
-        <div
-          style={{
-            fontFamily: text,
-            fontSize: 13,
-            fontWeight: 500,
-            color: APP.ink,
-            marginBottom: 5,
-          }}
-        >
-          Import your submission screenshot
-        </div>
-        <div
-          style={{
-            fontFamily: text,
-            fontSize: 11,
-            lineHeight: 1.45,
-            color: APP.muted,
-          }}
-        >
-          A screenshot of the upload receipt. Optional, you can confirm manually
-          instead.
-        </div>
+    <Shell style={{ padding: "0 18px 16px" }}>
+      <div style={{ margin: "0 -18px" }}>
+        <AppNavBar title="TapLatch" showAdd={false} />
       </div>
 
       <div
         style={{
-          fontFamily: text,
-          fontSize: 10.5,
-          fontWeight: 500,
-          color: APP.muted,
-          textAlign: "center",
-          marginBottom: 12,
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 20,
         }}
       >
-        or confirm manually
+        {/* Reader target. The two arcs are the field, the slab is the card. */}
+        <div style={{ position: "relative", display: "grid", placeItems: "center" }}>
+          <div
+            aria-hidden="true"
+            className="glow animate-pulse-glow"
+            style={{ inset: -52, filter: "blur(40px)" }}
+          />
+          <svg
+            width="128"
+            height="128"
+            viewBox="0 0 128 128"
+            fill="none"
+            aria-hidden="true"
+            style={{ position: "relative" }}
+          >
+            <rect
+              x="16"
+              y="40"
+              width="62"
+              height="48"
+              rx="9"
+              fill={APP.surfaceRaised}
+              stroke={`color-mix(in srgb, ${accent} 55%, transparent)`}
+              strokeWidth="1.6"
+            />
+            <rect x="27" y="52" width="26" height="4" rx="2" fill={accent} opacity="0.85" />
+            <rect x="27" y="62" width="17" height="3.4" rx="1.7" fill={APP.muted} />
+            <g stroke={accent} strokeWidth="3.4" strokeLinecap="round" fill="none">
+              <path d="M90 50a22 22 0 0 1 0 28" opacity="0.9" />
+              <path d="M102 40a36 36 0 0 1 0 48" opacity="0.55" />
+              <path d="M114 31a50 50 0 0 1 0 66" opacity="0.28" />
+            </g>
+          </svg>
+        </div>
+
+        <div style={{ textAlign: "center", padding: "0 8px" }}>
+          <div
+            style={{
+              fontFamily: rounded,
+              fontWeight: 800,
+              fontSize: 19,
+              letterSpacing: "-0.02em",
+              color: accent,
+              marginBottom: 8,
+            }}
+          >
+            {unlocked ? "Unlocked." : "Hold your card to the top."}
+          </div>
+          <p
+            style={{
+              fontFamily: text,
+              fontSize: 12,
+              lineHeight: 1.5,
+              color: APP.muted,
+              maxWidth: 215,
+              margin: "0 auto",
+            }}
+          >
+            {unlocked
+              ? "Tap the card again to lock everything back down."
+              : "One tap and your apps come back. One more and they go away again."}
+          </p>
+        </div>
       </div>
 
-      <div
-        style={{
-          height: 46,
-          display: "grid",
-          placeItems: "center",
-          borderRadius: 999,
-          background: APP.amber,
-          color: APP.bg,
-          fontFamily: rounded,
-          fontWeight: 800,
-          fontSize: 15,
-          marginBottom: 10,
-        }}
-      >
-        Unlock everything
+      <div style={{ display: "flex", flexDirection: "column", gap: 9, flexShrink: 0 }}>
+        <SectionHeader style={{ marginLeft: 4 }}>YOUR CARD</SectionHeader>
+        <DetailRow
+          icon="nfc"
+          iconColor={accent}
+          title="Desk card"
+          subtitle={unlocked ? "Open. 5 apps available." : "Latched. 5 apps locked."}
+          subtitleColor={accent}
+          tint={accent}
+        />
       </div>
-
-      <p
-        style={{
-          fontFamily: text,
-          fontSize: 11,
-          color: APP.muted,
-          textAlign: "center",
-          marginBottom: 8,
-        }}
-      >
-        Nothing is checked. Deadline takes you at your word.
-      </p>
-      <p
-        style={{
-          fontFamily: text,
-          fontSize: 10,
-          lineHeight: 1.45,
-          color: APP.muted,
-          textAlign: "center",
-        }}
-      >
-        Submitting lifts every lock for this assignment and silences its alarm
-        immediately.
-      </p>
     </Shell>
   );
 }
@@ -524,41 +583,26 @@ export function ActiveSessionCard({ delay = 0, live = true }) {
 /** GymRow: blue accent, right-aligned 12 semibold rounded status text. */
 export function GymCard({ delay = 0 }) {
   return (
-    <AppCard accent={APP.blue} tint={APP.blue} delay={delay}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontFamily: text,
-              fontSize: 15,
-              fontWeight: 600,
-              color: APP.ink,
-              marginBottom: 5,
-            }}
-          >
-            Morning lift
-          </div>
-          <div style={{ fontFamily: text, fontSize: 12.5, color: APP.muted, marginBottom: 8 }}>
-            Arrive by 6:30 AM · Mon, Wed, Fri
-          </div>
-          <TagPill text="GENTLE" color={APP.blue} />
-        </div>
-        <div
-          style={{
-            fontFamily: rounded,
-            fontWeight: 600,
-            fontSize: 11.5,
-            color: APP.blue,
-            textAlign: "right",
-            maxWidth: 108,
-            lineHeight: 1.35,
-            flexShrink: 0,
-          }}
-        >
-          Locks when you arrive at University of Guelph
-        </div>
-      </div>
-    </AppCard>
+    <CommitmentRow
+      title="Morning lift"
+      detail="Arrive by 6:30 AM · Mon, Wed, Fri"
+      release="Unlocks when you arrive at University of Guelph"
+      accent={APP.blue}
+      delay={delay}
+    />
+  );
+}
+
+/** WalkRow: the other half of the ACTIVE list, released by distance. */
+export function WalkCard({ delay = 0 }) {
+  return (
+    <CommitmentRow
+      title="Morning walk"
+      detail="500 m from where you started"
+      release="312 m measured so far"
+      accent={APP.amber}
+      delay={delay}
+    />
   );
 }
 
@@ -638,101 +682,6 @@ export function LocationScreen() {
       </div>
     </Shell>
   );
-}
-
-/* =================================================================
-   7. Escalation stages: the shield at each rung, plus the
-      notification banner for the 4-days-out stage.
-   ================================================================= */
-export function StageScreen({ stage }) {
-  if (stage.kind === "notify") {
-    return (
-      <Shell style={{ padding: "10px 16px 16px" }}>
-        <SectionHeader style={{ marginBottom: 12 }}>NOTIFICATIONS</SectionHeader>
-
-        {/* iOS notification banner */}
-        <div
-          style={{
-            background: "rgba(28,28,31,0.95)",
-            border: `1px solid ${APP.hairline}`,
-            borderRadius: 18,
-            padding: 13,
-            backdropFilter: "blur(14px)",
-            marginBottom: 10,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 7 }}>
-            {/* A real iOS banner shows the app's own icon and display name. */}
-            <AppIcon size={22} style={{ flexShrink: 0 }} />
-            <span
-              style={{
-                fontFamily: rounded,
-                fontWeight: 700,
-                fontSize: 10.5,
-                color: APP.ink,
-                letterSpacing: "0.3px",
-              }}
-            >
-              DEADLINE
-            </span>
-            <span style={{ marginLeft: "auto", fontFamily: text, fontSize: 10, color: APP.muted }}>
-              now
-            </span>
-          </div>
-          <div
-            style={{
-              fontFamily: text,
-              fontSize: 12.5,
-              fontWeight: 600,
-              color: APP.ink,
-              marginBottom: 3,
-            }}
-          >
-            4 days out.
-          </div>
-          <div style={{ fontFamily: text, fontSize: 11.5, lineHeight: 1.45, color: APP.muted }}>
-            MATH 235 · Problem Set 6 is due Friday. Nothing is locked yet. That
-            changes tomorrow.
-          </div>
-        </div>
-
-        <div
-          style={{
-            background: "rgba(28,28,31,0.7)",
-            border: `1px solid ${APP.hairline}`,
-            borderRadius: 18,
-            padding: 13,
-            opacity: 0.6,
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 6 }}>
-            <AppIcon size={22} style={{ flexShrink: 0 }} />
-            <span style={{ fontFamily: rounded, fontWeight: 700, fontSize: 10.5, color: APP.ink }}>
-              DEADLINE
-            </span>
-            <span style={{ marginLeft: "auto", fontFamily: text, fontSize: 10, color: APP.muted }}>
-              8h ago
-            </span>
-          </div>
-          <div style={{ fontFamily: text, fontSize: 11.5, color: APP.muted }}>
-            Your apps are still open. Use the time.
-          </div>
-        </div>
-
-        <div style={{ marginTop: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
-          <AssignmentRow
-            title="Problem Set 6"
-            course="MATH 235"
-            tier="STRICT"
-            countdown="Due in 4d"
-            date="Fri 14 Oct"
-          />
-        </div>
-      </Shell>
-    );
-  }
-
-  return <ShieldScreen subtitle={stage.shieldSubtitle} urgent={stage.tone === "danger"} />;
 }
 
 /* =================================================================
@@ -825,69 +774,84 @@ export function StylizedMap({ className = "", pinLabel }) {
   );
 }
 
-
 /* =================================================================
-   The Deadlines tab with the work already done.
-   Same list as DeadlinesTabScreen, but led by a submitted assignment:
-   green accent bar and a DONE pill, exactly as AssignmentRow renders a
-   resolved deadline (Palette.green, TagPill "DONE").
+   The TapLatch card itself, drawn rather than photographed.
+   Lives outside the phone chassis, in the TapLatch section.
    ================================================================= */
-export function SubmittedScreen() {
+export function TapLatchCard({ className = "" }) {
   return (
-    <Shell>
-      <AppNavBar title="Deadline" />
-
+    <div className={`relative ${className}`}>
       <div
+        aria-hidden="true"
+        className="glow animate-pulse-glow"
+        style={{ inset: "-26%", filter: "blur(64px)" }}
+      />
+      <div
+        className="relative flex w-full flex-col justify-between overflow-hidden p-6 sm:p-7"
         style={{
-          flex: 1,
-          minHeight: 0,
-          overflow: "hidden",
-          padding: "0 18px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 9,
-          maskImage: "linear-gradient(180deg,#000 88%,transparent 100%)",
-          WebkitMaskImage: "linear-gradient(180deg,#000 88%,transparent 100%)",
+          /* Inline rather than aspect-[1.586/1]: the slash in an arbitrary
+             Tailwind value reads as a modifier, so the ratio never lands. */
+          aspectRatio: "1.586 / 1",
+          borderRadius: 20,
+          background:
+            "linear-gradient(145deg, #1C1C1F 0%, #141416 55%, #0F0F11 100%)",
+          border: "1px solid rgba(251,174,60,0.28)",
+          boxShadow:
+            "0 30px 70px -28px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.07)",
         }}
       >
-        <SectionHeader>SUBMITTED</SectionHeader>
-        <AssignmentRow
-          title="Essay draft"
-          course="HIST 1250"
-          tier="STRICT"
-          extraPill={{ text: "DONE", color: APP.green }}
-          countdown="Submitted"
-          date="Sat 15 Oct"
-          accent={APP.green}
-          delay={0}
-        />
-        <AssignmentRow
-          title="Problem Set 6"
-          course="MATH 235"
-          tier="NO EXCUSES"
-          extraPill={{ text: "DONE", color: APP.green }}
-          countdown="Submitted"
-          date="Fri 14 Oct"
-          accent={APP.green}
-          dim={0.25}
-          delay={70}
+        {/* Specular sweep across the top edge, the one lensing effect the
+            design system still allows. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(118deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 42%)",
+          }}
         />
 
-        <SectionHeader style={{ marginTop: 2 }}>ACTIVE</SectionHeader>
-        <AssignmentRow
-          title="Reading response 4"
-          course="PHIL 2070"
-          tier="GENTLE"
-          countdown="Due in 6d"
-          date="Mon 17 Oct"
-          delay={140}
-        />
+        <div className="relative flex items-start justify-between">
+          <span className="inline-flex items-center gap-2.5">
+            <AppIcon size={34} />
+            <span
+              className="font-display font-extrabold text-ink"
+              style={{ fontSize: 17, letterSpacing: "-0.03em" }}
+            >
+              Deadline
+            </span>
+          </span>
+          <span style={{ color: APP.amber }}>
+            <Icon name="nfc" size={26} color={APP.amber} weight={1.6} />
+          </span>
+        </div>
+
+        <div className="relative">
+          <div
+            style={{
+              fontFamily: rounded,
+              fontWeight: 800,
+              fontSize: 22,
+              letterSpacing: "-0.02em",
+              color: APP.ink,
+              marginBottom: 5,
+            }}
+          >
+            TapLatch
+          </div>
+          <div
+            style={{
+              fontFamily: rounded,
+              fontWeight: 700,
+              fontSize: 10,
+              letterSpacing: "1px",
+              color: APP.muted,
+            }}
+          >
+            TAP TO LOCK · TAP TO UNLOCK
+          </div>
+        </div>
       </div>
-
-      <AppTabBar active="Deadlines" />
-    </Shell>
+    </div>
   );
 }
-
-/* Kept for the How It Works "Feel it" step. */
-export { DeadlinesTabScreen as FeelScreen };
